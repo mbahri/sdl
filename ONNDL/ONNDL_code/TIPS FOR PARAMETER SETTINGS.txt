@@ -1,0 +1,5 @@
+Most of the parameters don't need tuning, except the update frequency and affine parameters. Here are some tips for tuning them:
+
+1) For update frequency, most videos work under the setting of 5. For some videos that the object varies or occludes greatly, please change it to 3.
+
+2) For affine parameters, The first two indicates the translation, default parameter is 4, 4. If the object move fast, please change it to 6, 6 or even 8, 8. If the scale of the object changes fast, please change the third and fifth parameter to 0.02 and 0.005. 

@@ -1,0 +1,39 @@
+%% parameters
+sampleNum = 15000;
+patchSize = 12;
+OutlierNum = 5;
+atomNum = 32;
+randn('state',0);
+rand('state',0);
+
+%% data generation
+im = rgb2gray(im2double(imread('texture.png')));
+patch = zeros(patchSize^2, sampleNum);
+pathOutlier = zeros(patchSize^2, sampleNum);
+[Hig, Wid] = size(im);
+
+for ii = 1 : sampleNum
+    samH = randi(Hig - patchSize - 1);
+    samW = randi(Wid - patchSize - 1);
+    patchVector = reshape(im(samH : samH + patchSize -1, samW : samW + patchSize -1), [patchSize^2,1]);
+    patch(:,ii) = patchVector;
+    t = randperm(patchSize^2);
+    patchVector(t(1:OutlierNum)) = patchVector(t(1:OutlierNum)) + 5000*(1 + rand(OutlierNum,1));
+    pathOutlier(:,ii) = patchVector(:);
+end
+
+%% Online Robust Dictionary Learning
+D = ORDL_train(pathOutlier, atomNum);
+dictAtomsOurs = dict_demo(D);
+figure; imshow(dictAtomsOurs); title('Online Robust Dictionary Learning')
+
+
+%% If you want to see the result of traditional Dictionary Learning [Mairal et al. 2010], please download the code from http://spams-devel.gforge.inria.fr/ and put it into Mairal_DL\spams-matlab. 
+curPath = pwd;
+cd(fullfile(curPath,'Mairal_DL/spams-matlab'))
+start_spams;
+% compile;
+cd(curPath)
+Dm = Mairal_2010_DL(pathOutlier,atomNum);
+dictAtomsMarial = dict_demo(Dm);
+figure; imshow(dictAtomsMarial); title('Marial et al. 2010')
